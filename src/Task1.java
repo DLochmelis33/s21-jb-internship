@@ -1,13 +1,14 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Task1 {
 
     private static ArrayList<ArrayList<Integer>> graph;
     private static ArrayList<Integer> result;
     private static ArrayList<Integer> color;
-    private static boolean impossible = false;
+    private static boolean impossible;
 
     private static void dfs(int v) {
         if (color.get(v) == 1)
@@ -23,13 +24,7 @@ public class Task1 {
         result.add(v);
     }
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        String[] strs = new String[n];
-        for (int i = 0; i < n; i++)
-            strs[i] = sc.next();
-
+    public static ArrayList<Character> solve(int n, String[] names) {
         // build a graph on letters so that
         // a -> b <==> a must go before b
         // then topsort, if no cycles
@@ -37,6 +32,7 @@ public class Task1 {
         graph = new ArrayList<>();
         result = new ArrayList<>();
         color = new ArrayList<>();
+        impossible = false;
         int vertexes = 'z' - 'a' + 1;
         for (int v = 0; v < vertexes; v++) {
             graph.add(new ArrayList<>());
@@ -45,8 +41,8 @@ public class Task1 {
 
         // building a graph from the given strings
         for (int i = 1; i < n; i++) {
-            String s1 = strs[i - 1];
-            String s2 = strs[i];
+            String s1 = names[i - 1];
+            String s2 = names[i];
             int t = 0;
             while (t < s1.length() && t < s2.length() && s1.charAt(t) == s2.charAt(t))
                 t++;
@@ -68,13 +64,30 @@ public class Task1 {
                 dfs(v);
         }
 
-        if (impossible) {
-            System.out.println("Impossible");
-            System.exit(0);
-        }
+        if (impossible)
+            return null;
         Collections.reverse(result);
-        for (int v : result)
-            System.out.print((char) (v + 'a') + " ");
+        return result.stream().map(v -> (char) (v + 'a')).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        String[] names = new String[n];
+        for (int i = 0; i < n; i++)
+            names[i] = sc.next();
+
+        ArrayList<Character> solution = solve(n, names);
+
+        if(solution == null) {
+            System.out.println("Impossible");
+            return;
+        }
+        for (char c : solution)
+            System.out.print(c + " ");
         System.out.println();
     }
 }
+
+
+
